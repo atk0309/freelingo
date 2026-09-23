@@ -14,6 +14,10 @@ COPY messages/ ./messages/
 # (deps stage generates them but COPY frontend/ . above overwrites public/vad from source)
 RUN node scripts/copy-vad-models.js
 ENV NEXT_TELEMETRY_DISABLED=1
+ARG BACKEND_URL
+ARG NEXT_PUBLIC_API_URL
+ENV BACKEND_URL=$BACKEND_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 RUN npm run build
 
 FROM node:25-alpine AS runner
