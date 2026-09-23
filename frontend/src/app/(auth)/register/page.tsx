@@ -167,7 +167,6 @@ function RegisterForm() {
           <p className="text-fl-caption text-fl-muted-2 mt-1 font-mono tracking-widest uppercase">
             {tCommon('tagline')}
           </p>
-          )}
         </div>
 
         <div className="border-fl-border bg-fl-surface border p-8">
@@ -186,7 +185,7 @@ function RegisterForm() {
           {!invite && !configLoaded && (
             <div className="text-fl-muted-2 py-8 text-center font-mono text-xs tracking-wide">
               <Loader2 className="mx-auto mb-3 h-4 w-4 animate-spin" />
-              {tCommon('loading')}
+              {t('creatingAccount')}
             </div>
           )}
 
@@ -211,7 +210,7 @@ function RegisterForm() {
           )}
 
           {(invite || (configLoaded && allowRegistration)) && (
-          <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
             {[
               {
                 label: t('username'),
@@ -437,11 +436,11 @@ function RegisterForm() {
                 t('submit')
               )}
             </button>
-          </form>
+            </form>
           )}
 
           {(invite || (configLoaded && allowRegistration)) && (
-          <p className="text-fl-label text-fl-muted-2 mt-6 text-center font-mono tracking-wide">
+            <p className="text-fl-label text-fl-muted-2 mt-6 text-center font-mono tracking-wide">
             {t('hasAccount')}{' '}
             <Link
               href="/login"
@@ -449,7 +448,8 @@ function RegisterForm() {
             >
               {t('login')}
             </Link>
-          </p>
+            </p>
+          )}
         </div>
       </div>
     </div>
