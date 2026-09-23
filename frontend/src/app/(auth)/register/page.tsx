@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useCallback, useState } from 'react'
+import { Suspense, useCallback, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl'
 import { Loader2 } from 'lucide-react'
 import { apiFetch } from '@/lib/api'
 import { useAuthStore } from '@/store/auth'
+import { useConfigStore } from '@/store/config'
 
 const LANGUAGES = [
   'en',
@@ -37,6 +38,13 @@ function RegisterForm() {
   const invite = searchParams.get('invite')
   const selectedPlan = getSelectedPlan(searchParams.get('plan'))
   const setTokens = useAuthStore((s) => s.setTokens)
+  const allowRegistration = useConfigStore((s) => s.allowRegistration)
+  const configLoaded = useConfigStore((s) => s.loaded)
+  const loadConfig = useConfigStore((s) => s.load)
+
+  useEffect(() => {
+    void loadConfig()
+  }, [loadConfig])
 
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
@@ -174,13 +182,35 @@ function RegisterForm() {
             )}
           </div>
 
+          {!invite && !configLoaded && (
+            <div className="text-fl-muted-2 py-8 text-center font-mono text-xs tracking-wide">
+              <Loader2 className="mx-auto mb-3 h-4 w-4 animate-spin" />
+              {t('creatingAccount')}
+            </div>
+          )}
+
+          {!invite && configLoaded && !allowRegistration && (
+            <div className="space-y-5 py-2 text-center">
+              <div className="border-fl-border bg-fl-bg border px-4 py-4 font-mono text-xs leading-relaxed text-fl-muted-1">
+                {t('registrationClosed')}
+              </div>
+              <Link
+                href="/login"
+                className="bg-fl-accent text-fl-accent-fg hover:bg-fl-accent/90 inline-block w-full py-3 font-mono text-sm font-bold tracking-widest uppercase transition-colors"
+              >
+                {t('login')}
+              </Link>
+            </div>
+          )}
+
           {error && (
             <div className="border-fl-error/40 text-fl-error mb-5 border px-4 py-3 font-mono text-xs tracking-wide">
               ✕ {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {(invite || (configLoaded && allowRegistration)) && (
+            <form onSubmit={handleSubmit} className="space-y-4">
             {[
               {
                 label: t('username'),
@@ -406,9 +436,11 @@ function RegisterForm() {
                 t('submit')
               )}
             </button>
-          </form>
+            </form>
+          )}
 
-          <p className="text-fl-label text-fl-muted-2 mt-6 text-center font-mono tracking-wide">
+          {(invite || (configLoaded && allowRegistration)) && (
+            <p className="text-fl-label text-fl-muted-2 mt-6 text-center font-mono tracking-wide">
             {t('hasAccount')}{' '}
             <Link
               href="/login"
@@ -416,7 +448,8 @@ function RegisterForm() {
             >
               {t('login')}
             </Link>
-          </p>
+            </p>
+          )}
         </div>
       </div>
     </div>
